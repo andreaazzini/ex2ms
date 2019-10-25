@@ -53,7 +53,8 @@ defmodule Ex2ms do
     :==,
     :!==,
     :!=,
-    :self
+    :self,
+    :map_get
   ]
 
   @guard_functions @bool_functions ++ @extra_guard_functions
@@ -109,6 +110,12 @@ defmodule Ex2ms do
   defmacrop is_literal(term) do
     quote do
       is_atom(unquote(term)) or is_number(unquote(term)) or is_binary(unquote(term))
+    end
+  end
+
+  defmacrop map_get(key, map) do
+    quote do
+      :erlang.map_get(unquote(key), unquote(map))
     end
   end
 
@@ -178,7 +185,9 @@ defmodule Ex2ms do
     literal
   end
 
-  defp translate_cond(expr, _state), do: raise_expression_error(expr)
+  defp translate_cond(expr, _state) do
+    raise_expression_error(expr)
+  end
 
   defp translate_head([{:when, _, [param, cond]}], caller) do
     {head, state} = translate_param(param, caller)
